@@ -1,0 +1,22 @@
+version: '3.4'
+
+services:
+  non-zone-api:
+    container_name: non-zone-api
+    image: node
+    volumes:
+      - .:/app
+    working_dir: /app
+    environment:
+      - SWAGGER_URL=http://localhost:3005/api/docs
+      - ENVIRONMENT_IP=localhost
+      - SERVER_PORT=3006
+      - NODE_ENV=development
+    ports:
+      - "3006:3006"
+    command: /bin/bash -c 'yarn; yarn start;'
+    networks:
+      - non-zone
+
+networks:
+  non-zone:
