@@ -27,8 +27,8 @@ There are 15 billion M² of land in the world. If we consider:
 - 96 M² per Zone,
 - 16 Stories per Zone,
 - 15 000 000 000 M² of total area,
-then 15 000 000 000 / 96 * 16 = 2 500 000 000 
-By default *we have 2.5 Billion stories* to be told, and to be added to the map.
+- 15 000 000 000 / 96 * 16 = 2 500 000 000 Stories
+- By default, **we have 2.5 Billion stories** to be told, and to be added to the map.
 
 ### Zoners: 
 Users who download the mobile app, and "pin" a new Story on the map.
