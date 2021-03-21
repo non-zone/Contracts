@@ -5,7 +5,7 @@ Non-Zone's tokenomics includes:
 - Story NFTs --> Upgradeable ERC721.
 - h-SPACE --> Alpha token for the NFT hack.
 - SPACE --> Distance-based token, distributed at the launch.
-RoyalXP is the first Royalty+Reputation Token (and use-case) associated to live events.
+- SPACE is the first Distance-Based Token (and use-case) associated to Storytelling, NFT & Geo-caching.
 
 ## Terms
 ### Zones:
