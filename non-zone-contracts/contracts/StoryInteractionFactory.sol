@@ -58,7 +58,6 @@ contract StoryInteractionFactory is ERC721, SuperAppBase {
         _acceptedToken = acceptedToken;
         _receiver = msg.sender;
         deployemntDate = now;
-        
 
         uint256 configWord =
             SuperAppDefinitions.APP_LEVEL_FINAL |
@@ -72,8 +71,6 @@ contract StoryInteractionFactory is ERC721, SuperAppBase {
 
     // this function is responsible for minting the story NFT
     // it is the responsibility of the caller to pass the props json schema for ERC721Metadata (_props argument)
-    // _props must include 4 things:
-    // find the schema definition to conform to here: https://eips.ethereum.org/EIPS/eip-721
     function createStoryInteraction(
         address sender,
         string calldata _props,
