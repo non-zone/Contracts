@@ -42,7 +42,9 @@ export class NFTController {
                     name: nft.name,
                     description: nft.description,
                     image: nft.image,
-                    isMemory: nft.isMemory
+                    isMemory: nft.isMemory,
+                    lat: nft.lat,
+                    long: nft.long
                 });
                 res.status(201).send({ url });
             } else {
