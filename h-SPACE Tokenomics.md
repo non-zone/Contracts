@@ -1,4 +1,4 @@
-# Short paper describing the design of Intoo TV's Tokenomics
+# Short paper describing the design of Non-Zone's Tokenomics
 
 ## Abstract
 Non-Zone's tokenomics includes:
