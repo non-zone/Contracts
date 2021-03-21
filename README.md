@@ -1,6 +1,31 @@
 # NFT-Hack
 Composable, Upgradable ERC721 contracts, and integrations (Polygon, Superfluid, TheGraph) @ NFT Hack (ETHGlobal).
 
+- We use a composable, upgradable ERC721 contract for parent (Stories) and children (Interactions) NFTs
+- It relies on Polygon to ensure speed and interoperability of L2, in combination with Biconomy for meta-transactions and usability.
+- Any time a new story receives a first external interaction, the creator starts receiving a stream of h-SPACE tokens thanks to our integration with Superfluid. 
+- Interactions are tracked ("mapped") through TheGraph's Matic Subgraph for Business Distribution purposes.
+
+The more interactions a story receives, the more profitable it becomes - which creates a sort of "interest-bearing NFT" dynamics.
+
+### Team
+- **Alex**: [Twitter](https://twitter.com/jabylS)
+Team Lead, Product, UX/UI, Architecture, Tokenomics 
+- **Milena**: [Github](https://github.com/migrenaa) 
+Backend, Contracts, Integrations
+
+### One-liner
+> `Non-Zone is the Global Map of Stories for Experiential Traveling in everyday places.`
+
+### Links
+- [Video Demo](https://www.youtube.com/watch?v=)
+- [GitHub Org](https://github.com/non-zone/nft-hack)
+- [Tokenomics](https://github.com/non-zone/NFT-Hack/blob/main/h-SPACE%20Tokenomics.md)
+- [Mobile App](https://drive.google.com/drive/folders/1ofnql2RzXu5mZfKu18eX1N9207fcEB5a?usp=sharing)!
+
+----------------------------------
+
+
 Our Solution uses Storytelling, Geo-Fencing and Blockchain to create a global map of "special places." Users (Zoners/Travelers) can visit usual roads/streets - or may travel on the other side of the world - and can easily "pin" a new Story, based on their personal connection with it.
 
 Any time Users "pin" a new location, coordinates are added automatically, and they need to add a title/description/hashtag for the Story to be added to the map.
@@ -104,3 +129,43 @@ a new Stream of h-SPACE is opened towards _Zoner_'s account.
 1. 15 days of Distribution: _d-tot_
 2. daily distribution to be streamed (all addresses): _dh-SPACE = tot h-SPACE * 2 / d-left_
 3. daily Zoner's reward: _dh-SPACE / (s-Int / t-Int)_
+
+# Intoo TV on Matic
+
+![](https://i.imgur.com/jOwsFcP.png =100x100)
+
+
+### Team
+- **Alex**: [Twitter](https://twitter.com/jabylS)
+Team Lead, Product, UX/UI, Architecture, Tokenomics 
+- **Milena**: [Github](https://github.com/migrenaa) 
+Backend, Database, Textile
+- **Lorenzo**: [Github](https://github.com/lorenzobersano)
+Smart Contracts, d-Oracle
+- **Ben**: [Github](https://github.com/bengyles)
+React Native App
+
+### One-liner
+> `Intoo TV is a P2P Live-streaming platform to Design, share and monetize real-life experiences.`
+
+### Links
+- [Video Demo](https://www.youtube.com/watch?v=lyvln4Y2g_4)
+- [Walkthrough of the Hack](https://www.youtube.com/watch?v=sF-sRVkgUD4) (in 2 mins!)
+- [GitHub Org](https://github.com/intoo-tv)
+- [Matic Contracts](https://github.com/Intoo-TV/contracts-matic)
+- [Tokenomics](https://github.com/Intoo-TV/contracts-matic/blob/master/contracts/Tokenomics%20&%20Royal%20XP.md)
+- [Interactive Prototype](https://xd.adobe.com/view/3bf31b44-61a3-4c99-894f-9f13c7a23fee-6ea0/?fullscreen)!
+- Try out [Prototype App](https://drive.google.com/file/d/1OO45ac-ok42zucDgtjoWn-sgisD7FUy3/view?usp=sharing) (Android APK)
+- [Website](https://intoo.tv) (showcase)
+- Intoo TV on [Dapp.com](https://www.dapp.com/app/intoo-tv) & [Dapp Radar](https://dappradar.com/dashboard/dapps/5233/matic)
+
+----------------------------------
+
+### Hack Description
+#### A. Side Hack: 
+We ported an "Oraclize Connector" to bridge **[Provable](https://provable.xyz) on Matic** (to call a "check" between Database and Wallet ID at the moment of withdrawing from our crypto gateway) 
+
+#### B. Main Hack:
+- We deployed **all Intoo TV Smart Contracts on Matic Mainnet**!
+- We created a "Royalty Token" (a-Royal, v.0.1) to reward the Designers of the best experience Templates. This first version includes a limited supply (**500 aRXP**), and a hard cap for rewards of **max 5 aRXP per XP Designer**.   
+(see more in [Tokenomics](https://github.com/Intoo-TV/contracts-matic/blob/master/contracts/Tokenomics%20&%20Royal%20XP.md))
