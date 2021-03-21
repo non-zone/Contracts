@@ -18,7 +18,7 @@ Backend, Contracts, Integrations
 > `Non-Zone is the Global Map of Stories for Experiential Traveling in everyday places.`
 
 ### Links
-- [Video Demo](https://www.youtube.com/watch?v=)
+- [Video Demo](https://youtu.be/1K2azuJnGzA)
 - [GitHub Org](https://github.com/non-zone/nft-hack)
 - [Tokenomics](https://github.com/non-zone/NFT-Hack/blob/main/h-SPACE%20Tokenomics.md)
 - [Mobile App](https://drive.google.com/drive/folders/1ofnql2RzXu5mZfKu18eX1N9207fcEB5a?usp=sharing)!
