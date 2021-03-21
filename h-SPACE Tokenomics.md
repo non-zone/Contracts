@@ -5,7 +5,7 @@ Non-Zone's tokenomics includes:
 - Story NFTs --> Upgradeable ERC721.
 - h-SPACE --> Alpha token for the NFT hack.
 - SPACE --> Distance-based token, distributed at the launch.
-- SPACE is the first Distance-Based Token (and use-case) associated to Storytelling, NFT & Geo-caching.
+- SPACE is **the first Distance-Based Token (and use-case) associated to Storytelling, NFT & Geo-caching.**
 
 ## Terms
 ### Zones:
@@ -18,8 +18,9 @@ An NFT "pinned" on Non-Zone Map. Each Story is identified by:
 - Description (the actual text of the Story)
 - Snapshot (a picture/video associated to the Story)
 - Type [Fiction (= a fictional event) or Memory (= a personal event associated to the place)]
-
-*Story NFTs are natively minted on Polygon.*
+- We use a Composable NFT structure, where each Story is a _parent NFT_, and each Interaction with that Story is _child NFT_. 
+- _Child NFTs_ (Interactions) can be tracked on the Polygon network using TheGraph's Subgraph on MATIC.
+- **Story NFTs are natively minted on Polygon.**
 
 ### Scarcity:
 There are 15 billion M² of land in the world. If we consider: 
@@ -69,7 +70,7 @@ a new Stream of h-SPACE is opened towards _Zoner_'s account.
 15. XV / 18
 16. XVI / 18
 - Each "Interaction" is determined (_mapped_) using *theGraph's MATIC Subgraph*
-- Interactions can be paid in MATIC. 
+- Interactions are _child NFTs_ attached to the _parent NFT_ (the Story), this way we can keep track of them, and determine their value-added, and their ratio respect the total amount of Interactions.
 - The first 50 users connecting a Wallet and customizing their account will receive 5 MATIC, which covers more or less 3 paid interactions.
 
 ### h-SPACE CFA on Superfluid:
