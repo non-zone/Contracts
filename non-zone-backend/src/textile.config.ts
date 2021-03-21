@@ -13,8 +13,8 @@ export async function pushJSON(json: any): Promise<string> {
   const buckets = await Buckets.withKeyInfo(keyInfo)
   const { root } = await buckets.getOrCreate(bucketName)
   if (!root) throw new Error('bucket not created')
-  const buf = Buffer.from(JSON.stringify(json))
-  const links = await buckets.pushPath(root.key, 'nft.json', buf, { root })
+  const file = { path: '/nft.json', content: Buffer.from(JSON.stringify(json)) }
+  const links =  await buckets.pushPath(root.key, 'nft.json',  file)
   return `https://hub.textile.io${links.path.path}`;
 }
 
@@ -23,5 +23,6 @@ export async function pushImage(file: Buffer, extension: string): Promise<string
   const { root } = await buckets.getOrCreate(bucketName)
   if (!root) throw new Error('bucket not created')
   const links = await buckets.pushPath(root.key, `image.${extension}`, file, { root })
+  console.log(links)
   return `https://hub.textile.io${links.path.path}`;
 }
