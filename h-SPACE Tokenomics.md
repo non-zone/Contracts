@@ -80,4 +80,4 @@ a new Stream of h-SPACE is opened towards _Zoner_'s account.
 - h-SPACE Stream is based on:
 1. 15 days of Distribution: _d-tot_
 2. daily distribution to be streamed (all addresses): _dh-SPACE = tot h-SPACE * 2 / d-left_
-3. daily Zoner's reward: _dh-SPACE / (s-Int / t-Int)_
+3. daily Zoner's reward: _dh-SPACE * (s-Int / t-Int)_

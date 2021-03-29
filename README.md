@@ -1,25 +1,44 @@
 # NFT-Hack
 Composable, Upgradable ERC721 contracts, and integrations (Polygon, Superfluid, TheGraph) @ NFT Hack (ETHGlobal).
 
-Our Solution uses Storytelling, Geo-Fencing and Blockchain to create a global map of "special places." Users (Zoners/Travelers) can visit usual roads/streets - or may travel on the other side of the world - and can easily "pin" a new Story, based on their personal connection with it.
-
-Any time Users "pin" a new location, coordinates are added automatically, and they need to add a title/description/hashtag for the Story to be added to the map.
-
-The Mobile app works as an actual map for Travelers, and as a "Zone Detector" - sending Travelers a pop-up/audio notification any time they enter a new non-zone where stories have already been created.
-
-Inspiration:
-◦ Social Distancing COVID turned crowded, lively centers in "non-places", as described by Marc Augé – mere places of transit, where the human beings remain anonymous - and the event, or situation is not relevant enough to be remembered.
-
-◦ A Non-Zone is the exact opposite of this. It's a personal place. A place with a Story. Where something has happened.
-
-◦ Not a map of Locations, then but a map of Stories – to create a deeper human connection in the times of Social Distancing, and a richer traveling experience, whether somewhere on the other side of the world, or right downstairs, in a common road.
-
 - We use a composable, upgradable ERC721 contract for parent (Stories) and children (Interactions) NFTs
 - It relies on Polygon to ensure speed and interoperability of L2, in combination with Biconomy for meta-transactions and usability.
 - Any time a new story receives a first external interaction, the creator starts receiving a stream of h-SPACE tokens thanks to our integration with Superfluid. 
 - Interactions are tracked ("mapped") through TheGraph's Matic Subgraph for Business Distribution purposes.
 
 The more interactions a story receives, the more profitable it becomes - which creates a sort of "interest-bearing NFT" dynamics.
+
+### Team
+- **Alex**: [Twitter](https://twitter.com/jabylS)
+Team Lead, Product, UX/UI, Architecture, Tokenomics 
+- **Milena**: [Github](https://github.com/migrenaa) 
+Backend, Contracts, Integrations
+
+### One-liner
+> `Non-Zone is the Global Map of Stories for Experiential Traveling in everyday places.`
+
+### Links
+- [Video Demo](https://youtu.be/1K2azuJnGzA)
+- [GitHub Org](https://github.com/non-zone/nft-hack)
+- [Tokenomics](https://github.com/non-zone/NFT-Hack/blob/main/h-SPACE%20Tokenomics.md)
+- [Mobile App](https://drive.google.com/drive/folders/1ofnql2RzXu5mZfKu18eX1N9207fcEB5a?usp=sharing)!
+
+----------------------------------
+
+### Mobile App Solution
+Our Solution uses Storytelling, Geo-Fencing and Blockchain to create a global map of "special places." <br>
+Users (Zoners/Travelers) can visit usual roads/streets - or may travel on the other side of the world - and can easily "pin" a new Story, based on their personal connection with it.
+
+Any time Users "pin" a new location, coordinates are added automatically, and they need to add a title/description/hashtag for the Story to be added to the map.
+
+The Mobile app works as an actual map for Travelers, and as a "Zone Detector" - sending Travelers a pop-up/audio notification any time they enter a new non-zone where stories have already been created.
+
+### Inspiration: 
+◦ Social Distancing COVID turned crowded, lively centers in "non-places", as described by Marc Augé – mere places of transit, where the human beings remain anonymous - and the event, or situation is not relevant enough to be remembered.
+
+◦ A Non-Zone is the exact opposite of this. It's a personal place. A place with a Story. Where something has happened.
+
+◦ Not a map of Locations, then, but a map of Stories – to create a deeper human connection in the times of Social Distancing, and a richer traveling experience, whether somewhere on the other side of the world, or right downstairs, in a common road.
 
 # Non-Zone's Tokenomics
 
@@ -103,4 +122,4 @@ a new Stream of h-SPACE is opened towards _Zoner_'s account.
 - h-SPACE Stream is based on:
 1. 15 days of Distribution: _d-tot_
 2. daily distribution to be streamed (all addresses): _dh-SPACE = tot h-SPACE * 2 / d-left_
-3. daily Zoner's reward: _dh-SPACE / (s-Int / t-Int)_
+3. daily Zoner's reward: _dh-SPACE * (s-Int / t-Int)_
