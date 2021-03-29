@@ -21,18 +21,39 @@ import {
     SuperAppBase
 } from "@superfluid-finance/ethereum-contracts/contracts/apps/SuperAppBase.sol";
 
+import "./StoryFactory.sol"
+
 contract StoryInteractionFactory is ERC721, SuperAppBase {
     using Counters for Counters.Counter;
 
-    Counters.Counter private tokenIds; // to keep track of the number of NFTs we have minted
-    Interaction[] public interactions;
+    /*
+     * Superfluid contracts instances used for a 
+     * distribution flow
+     */
     ISuperfluid private _host; // host
     IConstantFlowAgreementV1 private _cfa; // the stored constant flow agreement class address
-    ISuperToken private _acceptedToken; // accepted token
+    ISuperToken private _spaceToken; // accepted token
+
+
+    // TokenID counter for the NFT
+    Counters.Counter private tokenId; // to keep track of the number of NFTs we have minted
+   
+    // The parent NFT contract instance
+    StoryFactory private _stories;
+
+    // the count of the active streams. 
+    // The distribution shouldn't open more than 20 streams
+    // for the first 20 stories with interactions 
+    uint8 _activeStreamsCount;
+
+    // mapping storyID -> [Interactions]
     mapping(uint256 => uint256[]) public storyInteractions;
+    Interaction[] public interactions;
+
     uint256 storiesCount;
     uint daysLeft = 15;
-    uint256 deployemntDate;
+    uint256 _deployemntDate;
+    address _tokenOwner;
 
     struct Interaction {
         address creator;
@@ -40,7 +61,6 @@ contract StoryInteractionFactory is ERC721, SuperAppBase {
     }
 
     event StoryInteractionCreated(
-        uint256 tokenId,
         address interactionCreator,
         string props,
         uint256 storyTokenId
@@ -49,15 +69,20 @@ contract StoryInteractionFactory is ERC721, SuperAppBase {
     constructor(
         string memory _name,
         string memory _symbol,
-        ISuperfluid host,
-        IConstantFlowAgreementV1 cfa,
-        ISuperToken acceptedToken
+        address hostAddress,
+        address cfaAddress,
+        address spaceTokenAddress,
+        address storyFactoryAddress,
+        address tokenOwner
     ) public ERC721(_name, _symbol) {
-        _host = host;
-        _cfa = cfa;
-        _acceptedToken = acceptedToken;
+        _host = ISuperfluid(hostAddress);
+        _cfa = IConstantFlowAgreementV1(cfaAddress);
+        _spaceToken = ISuperToken(spaceTokenAddress);
+        _stories = StoryFactory(storyFactoryAddress);
         _receiver = msg.sender;
-        deployemntDate = now;
+        _deployemntDate = now;
+        _activeStreams = 0;
+        _tokenOwner = tokenOwner;
 
         uint256 configWord =
             SuperAppDefinitions.APP_LEVEL_FINAL |
@@ -66,48 +91,53 @@ contract StoryInteractionFactory is ERC721, SuperAppBase {
                 SuperAppDefinitions.BEFORE_AGREEMENT_TERMINATED_NOOP;
 
         _host.registerApp(configWord);
-        _changeReceiver(msg.sender);
     }
 
     // this function is responsible for minting the story NFT
     // it is the responsibility of the caller to pass the props json schema for ERC721Metadata (_props argument)
     function createStoryInteraction(
-        address sender,
         string calldata _props,
-        uint256 _storyTokenId,
-        address storyOwner
+        uint256 _storyTokenId
     ) external payable onlyExpected returns (uint256) {
+
+        address owner = msg.owner;
+
+        // mint the NFT
         uint256 newItemId = tokenIds.current();
-        _mint(sender, newItemId);
+        _mint(owner, newItemId);
         _setTokenURI(newItemId, _props);
         tokenIds.increment();
 
-        Interaction memory interaction =
-            Interaction({creator: sender, props: _props});
-
-        interactions.push(interaction);
+        // add to the parent story's mapping
         storyInteractions[_storyTokenId].push(newItemId);
+        
+        // start stream if it's not yet started and there are free active streams slots 
+        address ownerOfTheStory = _stories.ownerOf(_storyTokenId)
+        if(storyInteractions[_storyTokenId].length == 1 && _activeStreamsCount < 20) _createStream(ownerOfStory, 1)
 
-        if (storyInteractions[_storyTokenId] == 0) storiesCount++;
-
-        if (storiesCount > 1 & storiesCount < 22) _createStream(storyOwner);
-
-        emit StoryInteractionCreated(newItemId, sender, _props, _storyTokenId);
+        emit StoryInteractionCreated(newItemId, owner, _props, _storyTokenId);
 
         return newItemId;
     }
 
-    function getStoryInteractions(uint256 _storyTokenId)
+    function updateStreams() {
+        // Daily update of the streams
+        // 1. stop all streams 
+        // 2. calculate the daily token amount 
+        // 3. start the streams 
+    }
+
+    function getStoryInteractions(uint256 tokenId)
         public
         view
         returns (uint256[] memory)
     {
-        return storyInteractions[_storyTokenId];
+        return storyInteractions[tokenId];
     }
 
-    function getFlowTokenAmount() internal returns (uint256[] memory) {
+    function getDailyDistributionTokenAmount() internal returns (uint256[] memory) {
         uint currentDay = (deployemntDate - now) / 60 / 60 / 24;
-        uint dailySpace = 1000 / (15 - currentDay);
+        uint dailySpace = _spaceToken.balanceOf(_tokenOwner) / (15 - currentDay);
         return dailySpace * 1e18 / 24 / 3600;
     }
 
@@ -125,49 +155,9 @@ contract StoryInteractionFactory is ERC721, SuperAppBase {
             );
     }
 
-    // @dev Change the Receiver of the total flow
-    // function _changeReceiver(address newReceiver) internal {
-    //     require(newReceiver != address(0), "New receiver is zero address");
-    //     require(
-    //         !_host.isApp(ISuperApp(newReceiver)),
-    //         "New receiver can not be a superApp"
-    //     );
-    //     if (newReceiver == _receiver) return;
-    //     // @dev delete flow to old receiver
-    //     (, int96 outFlowRate, , ) =
-    //         _cfa.getFlow(_acceptedToken, address(this), _receiver);
-    //     if (outFlowRate > 0) {
-    //         _host.callAgreement(
-    //             _cfa,
-    //             abi.encodeWithSelector(
-    //                 _cfa.deleteFlow.selector,
-    //                 _acceptedToken,
-    //                 address(this),
-    //                 _receiver,
-    //                 new bytes(0)
-    //             ),
-    //             "0x"
-    //         );
-    //         _host.callAgreement(
-    //             _cfa,
-    //             abi.encodeWithSelector(
-    //                 _cfa.createFlow.selector,
-    //                 _acceptedToken,
-    //                 newReceiver,
-    //                 _cfa.getNetFlow(_acceptedToken, address(this)),
-    //                 new bytes(0)
-    //             ),
-    //             "0x"
-    //         );
-    //     }
-    //     _receiver = newReceiver;
-
-    //     emit ReceiverChanged(_receiver);
-    // }
-
     modifier onlyExpected(ISuperToken superToken, address agreementClass) {
-        require(_isSameToken(superToken), "RedirectAll: not accepted token");
-        require(_isCFAv1(agreementClass), "RedirectAll: only CFAv1 supported");
+        require(_isSameToken(superToken), "StoryInteractionFactory: not accepted token");
+        require(_isCFAv1(agreementClass), "StoryInteractionFactory: only CFAv1 supported");
         _;
     }
 }

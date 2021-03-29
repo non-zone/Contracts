@@ -9,20 +9,13 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 contract StoryFactory is ERC721 {
     using Counters for Counters.Counter;
 
-    Counters.Counter private tokenIds; // to keep track of the number of NFTs we have minted
-    Story[] public stories;
-
+    Counters.Counter private _tokenId; // to keep track of the number of NFTs we have minted
     constructor(
         string memory _name,
         string memory _symbol
      ) ERC721(_name, _symbol) 
      {}
 
-    struct Story {
-        address creator;
-        string props;
-        bool isMemory;
-    }
 
     event StoryCreated(uint256 tokenId, address storyCreator, string props);
 
@@ -31,19 +24,15 @@ contract StoryFactory is ERC721 {
     // _props must include 4 things:
     // find the schema definition to conform to here: https://eips.ethereum.org/EIPS/eip-721
     function createStory(
-        address owner,
         string calldata _props,
         bool _isMemory
     ) external payable returns (uint256) {
+        address owner  = msg.sender;
         uint256 newItemId = tokenIds.current();
         _mint(owner, newItemId);
         _setTokenURI(newItemId, _props);
         tokenIds.increment();
 
-        Story memory story =
-            Story({creator: owner, props: _props, isMemory: _isMemory});
-
-        stories.push(story);
 
         emit StoryCreated(newItemId, owner, _props);
 
