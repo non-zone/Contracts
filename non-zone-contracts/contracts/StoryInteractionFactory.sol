@@ -25,6 +25,7 @@ import "./StoryFactory.sol";
 
 contract StoryInteractionFactory is ERC721, SuperAppBase {
     using Counters for Counters.Counter;
+    using SafeMath for uint256;
 
     /*
      * Superfluid contracts instances used for a
@@ -47,12 +48,6 @@ contract StoryInteractionFactory is ERC721, SuperAppBase {
 
     mapping(uint256 => uint256[]) public storyInteractions;
 
-    uint256 private storiesCount;
-    uint256 private daysLeft = 15;
-    uint256 private deployemntDate;
-    address private tokenOwner;
-    address private trustedForwarder;
-
     event StoryInteractionCreated(
         uint256 tokenId,
         address interactionCreator,
@@ -66,18 +61,13 @@ contract StoryInteractionFactory is ERC721, SuperAppBase {
         address _hostAddress,
         address _cfaAddress,
         address _spaceTokenAddress,
-        address _storyFactoryAddress,
-        address _tokenOwner,
-        address _trustedForwarder
+        address _storyFactoryAddress
     ) public ERC721(_name, _symbol) {
         host = ISuperfluid(_hostAddress);
         cfa = IConstantFlowAgreementV1(_cfaAddress);
         spaceToken = ISuperToken(_spaceTokenAddress);
         stories = StoryFactory(_storyFactoryAddress);
-        deployemntDate = block.timestamp;
         activeStreamsCount = 0;
-        tokenOwner = _tokenOwner;
-        trustedForwarder = _trustedForwarder;
 
         uint256 configWord =
             SuperAppDefinitions.APP_LEVEL_FINAL |
@@ -88,38 +78,13 @@ contract StoryInteractionFactory is ERC721, SuperAppBase {
         host.registerApp(configWord);
     }
 
-    /**
-     * return the sender of this call.
-     * if the call came through our trusted forwarder, return the original sender.
-     * otherwise, return `msg.sender`.
-     * should be used in the contract anywhere instead of msg.sender
-     */
-    function _msgSender()
-        internal
-        view
-        virtual
-        override
-        returns (address payable ret)
-    {
-        if (msg.data.length >= 24 && isTrustedForwarder(msg.sender)) {
-            // At this point we know that the sender is a trusted forwarder,
-            // so we trust that the last bytes of msg.data are the verified sender address.
-            // extract sender address from the end of msg.data
-            assembly {
-                ret := shr(96, calldataload(sub(calldatasize(), 20)))
-            }
-        } else {
-            return msg.sender;
-        }
-    }
-
     // this function is responsible for minting the story NFT
     // it is the responsibility of the caller to pass the props json schema for ERC721Metadata (_props argument)
     function createStoryInteraction(
         string calldata _props,
         uint256 _storyTokenId
     ) external payable returns (uint256) {
-        address owner = _msgSender();
+        address owner = msg.sender;
 
         // mint the NFT
         uint256 newItemId = tokenId.current();
@@ -135,7 +100,10 @@ contract StoryInteractionFactory is ERC721, SuperAppBase {
         if (
             storyInteractions[_storyTokenId].length == 1 &&
             activeStreamsCount < 20
-        ) _createStream(ownerOfTheStory, 1);
+        ) {
+            _createStream(ownerOfTheStory);
+            activeStreamsCount++;
+        }
 
         emit StoryInteractionCreated(newItemId, owner, _props, _storyTokenId);
 
@@ -150,28 +118,17 @@ contract StoryInteractionFactory is ERC721, SuperAppBase {
         return storyInteractions[_tokenId];
     }
 
-    function getDailyDistributionTokenAmount() internal returns (uint256) {
-        uint256 currentDay = (deployemntDate - block.timestamp) / 60 / 60 / 24;
-        uint256 dailySpace =
-            spaceToken.balanceOf(tokenOwner) / (15 - currentDay);
-        return (dailySpace * 1e18) / 24 / 3600;
-    }
-
-    function _createStream(address _receiver, uint256 _tokensAmount) internal {
+    function _createStream(address _receiver) internal {
         host.callAgreement(
             cfa,
             abi.encodeWithSelector(
                 cfa.createFlow.selector,
                 spaceToken,
                 _receiver,
-                _tokensAmount,
+                uint256((25 * 1e18) / (15 / 24 / 3600)), // 25 tokens for 15 days 
                 new bytes(0)
             ),
             "0x"
         );
-    }
-
-    function isTrustedForwarder(address forwarder) public view returns (bool) {
-        return forwarder == trustedForwarder;
     }
 }

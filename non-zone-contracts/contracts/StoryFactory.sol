@@ -11,12 +11,9 @@ contract StoryFactory is ERC721 {
 
     Counters.Counter private tokenId; // to keep track of the number of NFTs we have minted
 
-    address private trustedForwarder;
     constructor(string memory _name, string memory _symbol, address _trustedForwarder)
         ERC721(_name, _symbol) 
-    {
-        trustedForwarder = _trustedForwarder;
-    }
+    { }
 
     event StoryCreated(uint256 tokenId, address storyCreator, string props);
 
@@ -24,12 +21,12 @@ contract StoryFactory is ERC721 {
     // it is the responsibility of the caller to pass the props json schema for ERC721Metadata (_props argument)
     // _props must include 4 things:
     // find the schema definition to conform to here: https://eips.ethereum.org/EIPS/eip-721
-    function createStory(string calldata _props, bool _isMemory)
+    function createStory(string calldata _props)
         external
         payable
         returns (uint256)
     {
-        address owner = _msgSender();
+        address owner = msg.sender;
         uint256 newItemId = tokenId.current();
         _mint(owner, newItemId);
         _setTokenURI(newItemId, _props);
@@ -38,10 +35,5 @@ contract StoryFactory is ERC721 {
         emit StoryCreated(newItemId, owner, _props);
 
         return newItemId;
-    }
-
-
-    function isTrustedForwarder(address forwarder) public view returns(bool) {
-        return forwarder == trustedForwarder;
     }
 }
