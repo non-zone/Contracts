@@ -1,62 +1,62 @@
 {
-    "name": "@non-zone/contracts",
-    "license": "MIT",
-    "scripts": {
-      "prettier:solidity": "./node_modules/.bin/prettier --write contracts/**/*.sol",
-      "test": "yarn truffle test",
-      "deploy-matic": "dotenv npm run run:deploy-matic",
-      "run:deploy-matic": "truffle deploy --network matic",
-      "deploy-xdai": "dotenv npm run run:deploy-xdai",
-      "run:deploy-xdai": "truffle deploy --network xdai",
-      "copy-watch": "nodemon --watch \"../../packages\" --ext \"js,ts,tsx,sol\" --exec rsync --archive --delete \"../../packages/\" \"./node_modules/@superfluid-finance/\""
-    },
-    "dependencies": {
-      "@openzeppelin/contracts": "^3.3.0",
-      "@truffle/hdwallet-provider": "^1.0.44",
-      "@superfluid-finance/ethereum-contracts": "^1.0.0-rc.0",
-      "@superfluid-finance/js-sdk": "^0.4.0",
-      "@types/jest": "^26.0.14",
-      "@types/node": "^14.11.2",
-      "@types/react": "^16.9.49",
-      "@types/react-dom": "^16.9.8",
-      "assert": "^2.0.0",
-      "jest": "^26.4.2",
-      "truffle": "^5.1.44",
-      "ts-jest": "^26.4.0"
-    },
-    "devDependencies": {
-      "@loopback/build": "^6.2.4",
-      "dotenv": "^8.2.0",
-      "dotenv-cli": "^4.0.0",
-      "husky": "^4.3.0",
-      "lint-staged": "^10.4.0",
-      "prettier": "^2.1.2",
-      "prettier-plugin-solidity": "^1.0.0-alpha.57",
-      "solhint": "^3.2.0",
-      "solhint-plugin-prettier": "^0.0.5",
-      "truffle-plugin-verify": "^0.4.0"
-    },
-    "lint-staged": {
-      "*.+(js|jsx)": [
-        "eslint --fix"
-      ],
-      "*.+(json|css|md)": [
-        "prettier --write"
-      ]
-    },
-    "husky": {
-      "hooks": {
-        "pre-commit": "truffle compile",
-        "pre-push": "yarn prettier:solidity"
-      }
-    },
-    "files": [
-      "dist"
+  "name": "@non-zone/contracts",
+  "license": "MIT",
+  "scripts": {
+    "prettier:solidity": "./node_modules/.bin/prettier --write contracts/**/*.sol",
+    "test": "yarn truffle test",
+    "deploy-matic": "dotenv npm run run:deploy-matic",
+    "run:deploy-matic": "truffle deploy --network matic",
+    "deploy-xdai": "dotenv npm run run:deploy-xdai",
+    "run:deploy-xdai": "truffle deploy --network xdai",
+    "copy-watch": "nodemon --watch \"../../packages\" --ext \"js,ts,tsx,sol\" --exec rsync --archive --delete \"../../packages/\" \"./node_modules/@superfluid-finance/\""
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^3.3.0",
+    "@truffle/hdwallet-provider": "^1.0.44",
+    "@superfluid-finance/ethereum-contracts": "^1.0.0-rc.0",
+    "@superfluid-finance/js-sdk": "^0.4.0",
+    "@types/jest": "^26.0.14",
+    "@types/node": "^14.11.2",
+    "@types/react": "^16.9.49",
+    "@types/react-dom": "^16.9.8",
+    "assert": "^2.0.0",
+    "jest": "^26.4.2",
+    "truffle": "^5.1.44",
+    "ts-jest": "^26.4.0"
+  },
+  "devDependencies": {
+    "@loopback/build": "^6.2.4",
+    "dotenv": "^8.2.0",
+    "dotenv-cli": "^4.0.0",
+    "husky": "^4.3.0",
+    "lint-staged": "^10.4.0",
+    "prettier": "^2.1.2",
+    "prettier-plugin-solidity": "^1.0.0-alpha.57",
+    "solhint": "^3.2.0",
+    "solhint-plugin-prettier": "^0.0.5",
+    "truffle-plugin-verify": "^0.4.0"
+  },
+  "lint-staged": {
+    "*.+(js|jsx)": [
+      "eslint --fix"
     ],
-    "engines": {
-      "yarn": "^1.22.4"
-    },
-    "jest": {
-      "testEnvironment": "node"
+    "*.+(json|css|md)": [
+      "prettier --write"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "truffle compile",
+      "pre-push": "yarn prettier:solidity"
     }
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "yarn": "^1.22.4"
+  },
+  "jest": {
+    "testEnvironment": "node"
   }
+}

@@ -11,7 +11,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
  */
 contract HSpaceToken is ERC20 {
 
-    constructor() public ERC20("h-Space", "HSPC") {
+    constructor() ERC20("h-Space", "HSPC") {
         _mint(msg.sender, 500);
     }
 }

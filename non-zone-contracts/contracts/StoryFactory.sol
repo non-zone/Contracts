@@ -9,13 +9,14 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 contract StoryFactory is ERC721 {
     using Counters for Counters.Counter;
 
-    Counters.Counter private _tokenId; // to keep track of the number of NFTs we have minted
-    constructor(
-        string memory _name,
-        string memory _symbol
-     ) ERC721(_name, _symbol) 
-     {}
+    Counters.Counter private tokenId; // to keep track of the number of NFTs we have minted
 
+    address private trustedForwarder;
+    constructor(string memory _name, string memory _symbol, address _trustedForwarder)
+        ERC721(_name, _symbol) 
+    {
+        trustedForwarder = _trustedForwarder;
+    }
 
     event StoryCreated(uint256 tokenId, address storyCreator, string props);
 
@@ -23,19 +24,24 @@ contract StoryFactory is ERC721 {
     // it is the responsibility of the caller to pass the props json schema for ERC721Metadata (_props argument)
     // _props must include 4 things:
     // find the schema definition to conform to here: https://eips.ethereum.org/EIPS/eip-721
-    function createStory(
-        string calldata _props,
-        bool _isMemory
-    ) external payable returns (uint256) {
-        address owner  = msg.sender;
-        uint256 newItemId = tokenIds.current();
+    function createStory(string calldata _props, bool _isMemory)
+        external
+        payable
+        returns (uint256)
+    {
+        address owner = _msgSender();
+        uint256 newItemId = tokenId.current();
         _mint(owner, newItemId);
         _setTokenURI(newItemId, _props);
-        tokenIds.increment();
-
+        tokenId.increment();
 
         emit StoryCreated(newItemId, owner, _props);
 
         return newItemId;
+    }
+
+
+    function isTrustedForwarder(address forwarder) public view returns(bool) {
+        return forwarder == trustedForwarder;
     }
 }

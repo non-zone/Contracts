@@ -21,46 +21,40 @@ import {
     SuperAppBase
 } from "@superfluid-finance/ethereum-contracts/contracts/apps/SuperAppBase.sol";
 
-import "./StoryFactory.sol"
+import "./StoryFactory.sol";
 
 contract StoryInteractionFactory is ERC721, SuperAppBase {
     using Counters for Counters.Counter;
 
     /*
-     * Superfluid contracts instances used for a 
+     * Superfluid contracts instances used for a
      * distribution flow
      */
-    ISuperfluid private _host; // host
-    IConstantFlowAgreementV1 private _cfa; // the stored constant flow agreement class address
-    ISuperToken private _spaceToken; // accepted token
-
+    ISuperfluid private host;
+    IConstantFlowAgreementV1 private cfa;
+    ISuperToken private spaceToken;
 
     // TokenID counter for the NFT
     Counters.Counter private tokenId; // to keep track of the number of NFTs we have minted
-   
+
     // The parent NFT contract instance
-    StoryFactory private _stories;
+    StoryFactory private stories;
 
-    // the count of the active streams. 
+    // the count of the active streams.
     // The distribution shouldn't open more than 20 streams
-    // for the first 20 stories with interactions 
-    uint8 _activeStreamsCount;
+    // for the first 20 stories with interactions
+    uint8 activeStreamsCount;
 
-    // mapping storyID -> [Interactions]
     mapping(uint256 => uint256[]) public storyInteractions;
-    Interaction[] public interactions;
 
-    uint256 storiesCount;
-    uint daysLeft = 15;
-    uint256 _deployemntDate;
-    address _tokenOwner;
-
-    struct Interaction {
-        address creator;
-        string props;
-    }
+    uint256 private storiesCount;
+    uint256 private daysLeft = 15;
+    uint256 private deployemntDate;
+    address private tokenOwner;
+    address private trustedForwarder;
 
     event StoryInteractionCreated(
+        uint256 tokenId,
         address interactionCreator,
         string props,
         uint256 storyTokenId
@@ -69,20 +63,21 @@ contract StoryInteractionFactory is ERC721, SuperAppBase {
     constructor(
         string memory _name,
         string memory _symbol,
-        address hostAddress,
-        address cfaAddress,
-        address spaceTokenAddress,
-        address storyFactoryAddress,
-        address tokenOwner
+        address _hostAddress,
+        address _cfaAddress,
+        address _spaceTokenAddress,
+        address _storyFactoryAddress,
+        address _tokenOwner,
+        address _trustedForwarder
     ) public ERC721(_name, _symbol) {
-        _host = ISuperfluid(hostAddress);
-        _cfa = IConstantFlowAgreementV1(cfaAddress);
-        _spaceToken = ISuperToken(spaceTokenAddress);
-        _stories = StoryFactory(storyFactoryAddress);
-        _receiver = msg.sender;
-        _deployemntDate = now;
-        _activeStreams = 0;
-        _tokenOwner = tokenOwner;
+        host = ISuperfluid(_hostAddress);
+        cfa = IConstantFlowAgreementV1(_cfaAddress);
+        spaceToken = ISuperToken(_spaceTokenAddress);
+        stories = StoryFactory(_storyFactoryAddress);
+        deployemntDate = block.timestamp;
+        activeStreamsCount = 0;
+        tokenOwner = _tokenOwner;
+        trustedForwarder = _trustedForwarder;
 
         uint256 configWord =
             SuperAppDefinitions.APP_LEVEL_FINAL |
@@ -90,7 +85,32 @@ contract StoryInteractionFactory is ERC721, SuperAppBase {
                 SuperAppDefinitions.BEFORE_AGREEMENT_UPDATED_NOOP |
                 SuperAppDefinitions.BEFORE_AGREEMENT_TERMINATED_NOOP;
 
-        _host.registerApp(configWord);
+        host.registerApp(configWord);
+    }
+
+    /**
+     * return the sender of this call.
+     * if the call came through our trusted forwarder, return the original sender.
+     * otherwise, return `msg.sender`.
+     * should be used in the contract anywhere instead of msg.sender
+     */
+    function _msgSender()
+        internal
+        view
+        virtual
+        override
+        returns (address payable ret)
+    {
+        if (msg.data.length >= 24 && isTrustedForwarder(msg.sender)) {
+            // At this point we know that the sender is a trusted forwarder,
+            // so we trust that the last bytes of msg.data are the verified sender address.
+            // extract sender address from the end of msg.data
+            assembly {
+                ret := shr(96, calldataload(sub(calldatasize(), 20)))
+            }
+        } else {
+            return msg.sender;
+        }
     }
 
     // this function is responsible for minting the story NFT
@@ -98,66 +118,60 @@ contract StoryInteractionFactory is ERC721, SuperAppBase {
     function createStoryInteraction(
         string calldata _props,
         uint256 _storyTokenId
-    ) external payable onlyExpected returns (uint256) {
-
-        address owner = msg.owner;
+    ) external payable returns (uint256) {
+        address owner = _msgSender();
 
         // mint the NFT
-        uint256 newItemId = tokenIds.current();
+        uint256 newItemId = tokenId.current();
         _mint(owner, newItemId);
         _setTokenURI(newItemId, _props);
-        tokenIds.increment();
+        tokenId.increment();
 
         // add to the parent story's mapping
         storyInteractions[_storyTokenId].push(newItemId);
-        
-        // start stream if it's not yet started and there are free active streams slots 
-        address ownerOfTheStory = _stories.ownerOf(_storyTokenId)
-        if(storyInteractions[_storyTokenId].length == 1 && _activeStreamsCount < 20) _createStream(ownerOfStory, 1)
+
+        // start stream if it's not yet started and there are free active streams slots
+        address ownerOfTheStory = stories.ownerOf(_storyTokenId);
+        if (
+            storyInteractions[_storyTokenId].length == 1 &&
+            activeStreamsCount < 20
+        ) _createStream(ownerOfTheStory, 1);
 
         emit StoryInteractionCreated(newItemId, owner, _props, _storyTokenId);
 
         return newItemId;
     }
 
-    function updateStreams() {
-        // Daily update of the streams
-        // 1. stop all streams 
-        // 2. calculate the daily token amount 
-        // 3. start the streams 
-    }
-
-    function getStoryInteractions(uint256 tokenId)
+    function getStoryInteractions(uint256 _tokenId)
         public
         view
         returns (uint256[] memory)
     {
-        return storyInteractions[tokenId];
+        return storyInteractions[_tokenId];
     }
 
-    function getDailyDistributionTokenAmount() internal returns (uint256[] memory) {
-        uint currentDay = (deployemntDate - now) / 60 / 60 / 24;
-        uint dailySpace = _spaceToken.balanceOf(_tokenOwner) / (15 - currentDay);
-        return dailySpace * 1e18 / 24 / 3600;
+    function getDailyDistributionTokenAmount() internal returns (uint256) {
+        uint256 currentDay = (deployemntDate - block.timestamp) / 60 / 60 / 24;
+        uint256 dailySpace =
+            spaceToken.balanceOf(tokenOwner) / (15 - currentDay);
+        return (dailySpace * 1e18) / 24 / 3600;
     }
 
-    function _createStream(address receiver, uint256 tokensAmount) internal {
-        _host.callAgreement(
-                _cfa,
-                abi.encodeWithSelector(
-                    _cfa.createFlow.selector,
-                    _acceptedToken,
-                    receiver,
-                    tokensAmount,
-                    new bytes(0)
-                ),
-                "0x"
-            );
+    function _createStream(address _receiver, uint256 _tokensAmount) internal {
+        host.callAgreement(
+            cfa,
+            abi.encodeWithSelector(
+                cfa.createFlow.selector,
+                spaceToken,
+                _receiver,
+                _tokensAmount,
+                new bytes(0)
+            ),
+            "0x"
+        );
     }
 
-    modifier onlyExpected(ISuperToken superToken, address agreementClass) {
-        require(_isSameToken(superToken), "StoryInteractionFactory: not accepted token");
-        require(_isCFAv1(agreementClass), "StoryInteractionFactory: only CFAv1 supported");
-        _;
+    function isTrustedForwarder(address forwarder) public view returns (bool) {
+        return forwarder == trustedForwarder;
     }
 }
