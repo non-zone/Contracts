@@ -1,4 +1,4 @@
-# NFT-Hack
+# Non-Zone Contract suite
 Composable, Upgradable ERC721 contracts, and integrations (Polygon, Superfluid, TheGraph) @ NFT Hack (ETHGlobal).
 
 - We use a composable, upgradable ERC721 contract for parent (Stories) and children (Interactions) NFTs
@@ -88,8 +88,7 @@ Examples of meaningful interactions are:
 - "Add your Story" - the Explorer can add a Snapshot to the original Story, or continue it, adding a small chapter. 
 It's a paid interaction, but the Contributor receives future shares of the profit based on the value of its Contribution.
 
-## NFT Hack Distribution 
-### h-SPACE (v0.1, NFT Hack)
+## h-SPACE Distribution (v0.1, 31/03)
 - Only 500 h-SPACE (Hack SPACE) generated on Polygon.
 - Zoners (Creators) can create and pin their first story for free.
 - Once a new Story receives its first interaction from an _Explorer_,
