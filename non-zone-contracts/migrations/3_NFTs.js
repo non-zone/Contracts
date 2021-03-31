@@ -2,20 +2,21 @@ const StoryFactory = artifacts.require('StoryFactory');
 const StoryInteractionFactory = artifacts.require('StoryInteractionFactory');
 const SpaceToken = artifacts.require('SpaceToken');
 
-const HOST = '0x3E14dC1b13c488a8d5D310918780c983bD5982E7';
-const CFA = '0x6EeE6060f715257b970700bc2656De21dEdF074C';
-const SPACE_TOKEN = '0x176aF5305732854597082ce5c2171263b0bD7187';
-const STORY_FACTORY = '0x08D32D581847afD9F215CC212723cb477f8EF8d0';
+const HOST = '0xEB796bdb90fFA0f28255275e16936D25d3418603';
+const CFA = '0x49e565Ed1bdc17F3d220f72DF0857C26FA83F873';
+const SPACE_TOKEN_MUMBAI= '0xB203A837C3F1455F53665CCb1C67c2F5ED2331F4';
+// const STORY_FACTORY = '0x08D32D581847afD9F215CC212723cb477f8EF8d0';
+ const STORY_FACTORY_MUMBAI = '0x9bb80a452388aF8c312519D50a59eFC5e6E3c478';
+
 
 module.exports = async (deployer, network, accounts) => {
 
-//   await deployer.deploy(
-//     StoryFactory,
-//     'StoryFactory',
-//     'STORIES'
-//   );
-  // console.log(SpaceToken.address);
-  console.log(StoryFactory.address);
+  // await deployer.deploy(
+  //   StoryFactory,
+  //   'StoryFactory',
+  //   'STORIES'
+  // );
+  // console.log(StoryFactory.address);
 
   await deployer.deploy(
     StoryInteractionFactory,
@@ -23,7 +24,7 @@ module.exports = async (deployer, network, accounts) => {
     'INTERACTIONS',
     HOST,
     CFA,
-    SPACE_TOKEN,
-    STORY_FACTORY
+    SPACE_TOKEN_MUMBAI,
+    STORY_FACTORY_MUMBAI
   );
 };

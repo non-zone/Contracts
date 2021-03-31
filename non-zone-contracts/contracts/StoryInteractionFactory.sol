@@ -47,12 +47,17 @@ contract StoryInteractionFactory is ERC721, SuperAppBase {
     uint8 activeStreamsCount;
 
     mapping(uint256 => uint256[]) public storyInteractions;
+    mapping(address => bool) public startedStream;
 
+    /* 
+        This event is emited when a story interaction NFT is created
+    */
     event StoryInteractionCreated(
         uint256 tokenId,
         address interactionCreator,
         string props,
-        uint256 storyTokenId
+        uint256 storyTokenId,
+        bool openStream
     );
 
     constructor(
@@ -78,8 +83,13 @@ contract StoryInteractionFactory is ERC721, SuperAppBase {
         host.registerApp(configWord);
     }
 
-    // this function is responsible for minting the story NFT
-    // it is the responsibility of the caller to pass the props json schema for ERC721Metadata (_props argument)
+    /* 
+        createStoryInteraction mints a new "child" of the story owner NFT.
+        If there are no open streams to the story owner and there haven't been open 20 streams yet,
+        the function will opens a new one
+        The story owner will receive 25 HSPACE tokens in 15 days.
+
+    */
     function createStoryInteraction(
         string calldata _props,
         uint256 _storyTokenId
@@ -92,23 +102,33 @@ contract StoryInteractionFactory is ERC721, SuperAppBase {
         _setTokenURI(newItemId, _props);
         tokenId.increment();
 
+        bool openStream = false;
+
         // add to the parent story's mapping
         storyInteractions[_storyTokenId].push(newItemId);
 
+        // get the address of the story owner
         address ownerOfTheStory = stories.ownerOf(_storyTokenId);
-        if (
-            storyInteractions[_storyTokenId].length == 1 &&
-            activeStreamsCount < 20
-        ) {
+
+        // check if the story owner has opened stream and if there are still open
+        // slots for opening a stream. => if so, open a new stream.
+        if (!startedStream[ownerOfTheStory] && activeStreamsCount < 20) {
             _createStream(ownerOfTheStory);
+            startedStream[ownerOfTheStory] = true;
             activeStreamsCount++;
+            openStream = true;
         }
 
-        emit StoryInteractionCreated(newItemId, owner, _props, _storyTokenId);
+        // Emit event with the new NFT data and a value showing whether the stream for this user has been opened.
+        emit StoryInteractionCreated(newItemId, owner, _props, _storyTokenId, openStream);
 
         return newItemId;
     }
 
+    /**
+        Creates SuperFluid constant agreement flow.
+        It will be sending the story owner's 25 tokens in the next 15 days.
+     */
     function _createStream(address _receiver) internal {
         host.callAgreement(
             cfa,
@@ -116,7 +136,7 @@ contract StoryInteractionFactory is ERC721, SuperAppBase {
                 cfa.createFlow.selector,
                 spaceToken,
                 _receiver,
-                uint256((25 * 1e18) / (15 / 24 / 3600)), // 25 tokens for 15 days 
+                uint256((25 * 1e18) / (15 / 24 / 3600)), // 25 tokens for 15 days
                 new bytes(0)
             ),
             "0x"
