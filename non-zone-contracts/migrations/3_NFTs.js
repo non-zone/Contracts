@@ -12,8 +12,7 @@ module.exports = async (deployer, network, accounts) => {
 //   await deployer.deploy(
 //     StoryFactory,
 //     'StoryFactory',
-//     'STORIES',
-//     '0x86C80a8aa58e0A4fa09A69624c31Ab2a6CAD56b8'
+//     'STORIES'
 //   );
   // console.log(SpaceToken.address);
   console.log(StoryFactory.address);

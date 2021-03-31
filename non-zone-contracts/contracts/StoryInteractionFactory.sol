@@ -95,7 +95,6 @@ contract StoryInteractionFactory is ERC721, SuperAppBase {
         // add to the parent story's mapping
         storyInteractions[_storyTokenId].push(newItemId);
 
-        // start stream if it's not yet started and there are free active streams slots
         address ownerOfTheStory = stories.ownerOf(_storyTokenId);
         if (
             storyInteractions[_storyTokenId].length == 1 &&
@@ -108,14 +107,6 @@ contract StoryInteractionFactory is ERC721, SuperAppBase {
         emit StoryInteractionCreated(newItemId, owner, _props, _storyTokenId);
 
         return newItemId;
-    }
-
-    function getStoryInteractions(uint256 _tokenId)
-        public
-        view
-        returns (uint256[] memory)
-    {
-        return storyInteractions[_tokenId];
     }
 
     function _createStream(address _receiver) internal {

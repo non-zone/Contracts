@@ -11,7 +11,7 @@ contract StoryFactory is ERC721 {
 
     Counters.Counter private tokenId; // to keep track of the number of NFTs we have minted
 
-    constructor(string memory _name, string memory _symbol, address _trustedForwarder)
+    constructor(string memory _name, string memory _symbol)
         ERC721(_name, _symbol) 
     { }
 
