@@ -15,6 +15,7 @@ export class NFTRouter {
     this._router.post("/", this.nftController.post);
     this._router.post("/image", this.nftController.postImage);
     this._router.get("/thegraph", this.nftController.fetchNFTData);
+    this._router.post("/address", this.nftController.address);
   }
 
   public get router(): Router {

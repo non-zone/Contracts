@@ -78,4 +78,17 @@ export class NFTController {
             res.status(500).send({ error: "Something went wrong, please try again later." });
         }
     }
+
+
+
+    public address = async (req: any, res: Response) => {
+        try {
+            const body = req.body;
+            console.log(body);
+            res.status(200).send();
+        } catch (err) {
+            this.loggerService.error(err);
+            res.status(500).send({ error: "Something went wrong, please try again later." });
+        }
+    }
 }

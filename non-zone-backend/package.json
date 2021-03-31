@@ -23,6 +23,8 @@
     "@ethersproject/contracts": "^5.0.12",
     "@superfluid-finance/js-sdk": "^0.4.1",
     "@textile/hub": "6.1.2",
+    "@maticnetwork/maticjs":"2.0.37",
+    "@maticnetwork/meta":"2.4.10",
     "axios": "0.21.1",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
