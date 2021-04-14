@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@loopback/build": "^6.2.4",
+    "chai":"4.3.4",
     "dotenv": "^8.2.0",
     "dotenv-cli": "^4.0.0",
     "husky": "^4.3.0",

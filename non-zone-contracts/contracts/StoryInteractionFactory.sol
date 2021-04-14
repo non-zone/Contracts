@@ -17,13 +17,9 @@ import {
     IConstantFlowAgreementV1
 } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/agreements/IConstantFlowAgreementV1.sol";
 
-import {
-    SuperAppBase
-} from "@superfluid-finance/ethereum-contracts/contracts/apps/SuperAppBase.sol";
-
 import "./StoryFactory.sol";
 
-contract StoryInteractionFactory is ERC721, SuperAppBase {
+contract StoryInteractionFactory is ERC721 {
     using Counters for Counters.Counter;
     using SafeMath for uint256;
 
@@ -33,18 +29,18 @@ contract StoryInteractionFactory is ERC721, SuperAppBase {
      */
     ISuperfluid private host;
     IConstantFlowAgreementV1 private cfa;
-    ISuperToken private spaceToken;
+    ISuperToken private hSpaceToken;
 
     // TokenID counter for the NFT
-    Counters.Counter private tokenId; // to keep track of the number of NFTs we have minted
+    // to keep track of the number of NFTs minted
+    Counters.Counter private tokenId; 
 
     // The parent NFT contract instance
     StoryFactory private stories;
 
     // the count of the active streams.
     // The distribution shouldn't open more than 20 streams
-    // for the first 20 stories with interactions
-    uint8 activeStreamsCount;
+    uint8 public activeStreamsCount;
 
     mapping(uint256 => uint256[]) public storyInteractions;
     mapping(address => bool) public startedStream;
@@ -65,40 +61,36 @@ contract StoryInteractionFactory is ERC721, SuperAppBase {
         string memory _symbol,
         address _hostAddress,
         address _cfaAddress,
-        address _spaceTokenAddress,
+        address _hSpaceTokenAddress,
         address _storyFactoryAddress
     ) public ERC721(_name, _symbol) {
         host = ISuperfluid(_hostAddress);
         cfa = IConstantFlowAgreementV1(_cfaAddress);
-        spaceToken = ISuperToken(_spaceTokenAddress);
+        hSpaceToken = ISuperToken(_hSpaceTokenAddress);
         stories = StoryFactory(_storyFactoryAddress);
         activeStreamsCount = 0;
-
-        uint256 configWord =
-            SuperAppDefinitions.APP_LEVEL_FINAL |
-                SuperAppDefinitions.BEFORE_AGREEMENT_CREATED_NOOP |
-                SuperAppDefinitions.BEFORE_AGREEMENT_UPDATED_NOOP |
-                SuperAppDefinitions.BEFORE_AGREEMENT_TERMINATED_NOOP;
-
-        host.registerApp(configWord);
     }
 
     /* 
-        createStoryInteraction mints a new "child" of the story owner NFT.
-        If there are no open streams to the story owner and there haven't been open 20 streams yet,
-        the function will opens a new one
+        createStoryInteraction mints a new "child" of the original story NFT.
+        If there are no open streams to the story owner and there haven't been opened 20 streams yet,
+        the function opens a new one.
         The story owner will receive 25 HSPACE tokens in 15 days.
-
     */
     function createStoryInteraction(
         string calldata _props,
         uint256 _storyTokenId
-    ) external payable returns (uint256) {
-        address owner = msg.sender;
+    ) external payable {
 
-        // mint the NFT
+
+        // get the address of the story owner
+        address ownerOfTheStory = stories.ownerOf(_storyTokenId);
+
+        require(ownerOfTheStory != msg.sender, 'The owner of the story is not allowed to interact with their own stories.');
+        
+        // mint the interaction NFT
         uint256 newItemId = tokenId.current();
-        _mint(owner, newItemId);
+        _mint(msg.sender, newItemId);
         _setTokenURI(newItemId, _props);
         tokenId.increment();
 
@@ -107,34 +99,32 @@ contract StoryInteractionFactory is ERC721, SuperAppBase {
         // add to the parent story's mapping
         storyInteractions[_storyTokenId].push(newItemId);
 
-        // get the address of the story owner
-        address ownerOfTheStory = stories.ownerOf(_storyTokenId);
 
-        // check if the story owner has opened stream and if there are still open
-        // slots for opening a stream. => if so, open a new stream.
+        // check if 
+        // 1. there's already created stream to the story owner
+        // 2. there are still empty slots for opening a stream
+        // -> create a stream 
         if (!startedStream[ownerOfTheStory] && activeStreamsCount < 20) {
-            _createStream(ownerOfTheStory);
+            // _createStream(ownerOfTheStory);
             startedStream[ownerOfTheStory] = true;
             activeStreamsCount++;
             openStream = true;
         }
 
         // Emit event with the new NFT data and a value showing whether the stream for this user has been opened.
-        emit StoryInteractionCreated(newItemId, owner, _props, _storyTokenId, openStream);
-
-        return newItemId;
+        emit StoryInteractionCreated(newItemId, msg.sender, _props, _storyTokenId, openStream);
     }
 
     /**
         Creates SuperFluid constant agreement flow.
-        It will be sending the story owner's 25 tokens in the next 15 days.
+        It will be sending the recipient 25 tokens in period of 15 days.
      */
     function _createStream(address _receiver) internal {
         host.callAgreement(
             cfa,
             abi.encodeWithSelector(
                 cfa.createFlow.selector,
-                spaceToken,
+                hSpaceToken,
                 _receiver,
                 uint256((25 * 1e18) / (15 / 24 / 3600)), // 25 tokens for 15 days
                 new bytes(0)

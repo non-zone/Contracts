@@ -11,12 +11,17 @@ const SPACE_TOKEN_MUMBAI= '0xB203A837C3F1455F53665CCb1C67c2F5ED2331F4';
 
 module.exports = async (deployer, network, accounts) => {
 
-  // await deployer.deploy(
-  //   StoryFactory,
-  //   'StoryFactory',
-  //   'STORIES'
-  // );
-  // console.log(StoryFactory.address);
+
+  await deployer.deploy(
+    SpaceToken
+  );
+
+  await deployer.deploy(
+    StoryFactory,
+    'StoryFactory',
+    'STORIES'
+  );
+  console.log(StoryFactory.address);
 
   await deployer.deploy(
     StoryInteractionFactory,
@@ -24,7 +29,9 @@ module.exports = async (deployer, network, accounts) => {
     'INTERACTIONS',
     HOST,
     CFA,
-    SPACE_TOKEN_MUMBAI,
-    STORY_FACTORY_MUMBAI
+    // SPACE_TOKEN_MUMBAI,
+    SpaceToken.address,
+    // STORY_FACTORY_MUMBAI
+    StoryFactory.address
   );
 };
