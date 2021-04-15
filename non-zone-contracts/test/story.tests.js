@@ -1,9 +1,10 @@
-const { assert, expect } = require("chai");
+const { expect } = require("chai");
 
 const StoryFactory = artifacts.require("StoryFactory");
 const StoryInteractionFactory = artifacts.require("StoryInteractionFactory");
-
 contract("StoryFactory", async accounts => {
+console.log(accounts[9]);
+
     it("should create a story", async () => {
         const instance = await StoryFactory.deployed();
 
@@ -20,7 +21,7 @@ contract("StoryFactory", async accounts => {
 });
 contract("StoryInteractionFactory", async accounts => {
 
-    it("should create a child story and open a stream if there are free spots left", async () => {
+    it.only("should create a child story and open a stream if there are free spots left", async () => {
         const storyFactory = await StoryFactory.deployed();
         const storyInstanceFactory = await StoryInteractionFactory.deployed();
 
@@ -29,10 +30,13 @@ contract("StoryInteractionFactory", async accounts => {
             { from: accounts[1] }
         );
 
+        console.log('accounts[2]')
+        console.log(accounts[2]);
         await storyInstanceFactory.createStoryInteraction(
+            accounts[2],
             'http://something.com/something.json',
             0,
-            { from: accounts[2] }
+            { from: accounts[0] }
         );
 
         const activeStreams = await storyInstanceFactory.activeStreamsCount();
@@ -51,9 +55,10 @@ contract("StoryInteractionFactory", async accounts => {
         const storyInstanceFactory = await StoryInteractionFactory.deployed();
 
         await storyInstanceFactory.createStoryInteraction(
+            accounts[9],
             'http://something.com/something.json',
             0,
-            { from: accounts[9] }
+            { from: accounts[0] }
 
         );
 
@@ -66,9 +71,10 @@ contract("StoryInteractionFactory", async accounts => {
         expect(accountBalance.valueOf().toString()).to.be.equal('1');
 
         await storyInstanceFactory.createStoryInteraction(
+            accounts[5],
             'http://something.com/something.json',
             0,
-            { from: accounts[5] }
+            { from: accounts[0] }
         );
 
         activeStreams = await storyInstanceFactory.activeStreamsCount();
@@ -85,9 +91,10 @@ contract("StoryInteractionFactory", async accounts => {
 
         try {
             await storyInstanceFactory.createStoryInteraction(
+                accounts[1],
                 'http://something.com/something.json',
                 0,
-                { from: accounts[1] }
+                { from: accounts[0] }
             )
             expect(true).to.eq('Did not throw');
         } catch (err) {
