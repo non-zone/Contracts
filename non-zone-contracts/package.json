@@ -6,8 +6,6 @@
     "test": "yarn truffle test",
     "deploy-matic": "dotenv npm run run:deploy-matic",
     "run:deploy-matic": "truffle deploy --network matic",
-    "deploy-xdai": "dotenv npm run run:deploy-xdai",
-    "run:deploy-xdai": "truffle deploy --network xdai",
     "copy-watch": "nodemon --watch \"../../packages\" --ext \"js,ts,tsx,sol\" --exec rsync --archive --delete \"../../packages/\" \"./node_modules/@superfluid-finance/\""
   },
   "dependencies": {

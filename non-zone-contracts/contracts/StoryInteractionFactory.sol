@@ -45,6 +45,8 @@ contract StoryInteractionFactory is ERC721 {
     mapping(uint256 => uint256[]) public storyInteractions;
     mapping(address => bool) public startedStream;
 
+    address deployer;
+
     /* 
         This event is emited when a story interaction NFT is created
     */
@@ -69,6 +71,7 @@ contract StoryInteractionFactory is ERC721 {
         hSpaceToken = ISuperToken(_hSpaceTokenAddress);
         stories = StoryFactory(_storyFactoryAddress);
         activeStreamsCount = 0;
+        deployer = msg.sender;
     }
 
     /* 
@@ -78,19 +81,21 @@ contract StoryInteractionFactory is ERC721 {
         The story owner will receive 25 HSPACE tokens in 15 days.
     */
     function createStoryInteraction(
+        address owner,
         string calldata _props,
         uint256 _storyTokenId
     ) external payable {
 
+        require(msg.sender == deployer, 'This can be called only by the deployer of the contract');
 
         // get the address of the story owner
         address ownerOfTheStory = stories.ownerOf(_storyTokenId);
 
-        require(ownerOfTheStory != msg.sender, 'The owner of the story is not allowed to interact with their own stories.');
+        require(ownerOfTheStory != owner, 'The owner of the story is not allowed to interact with their own stories.');
         
         // mint the interaction NFT
         uint256 newItemId = tokenId.current();
-        _mint(msg.sender, newItemId);
+        _mint(owner, newItemId);
         _setTokenURI(newItemId, _props);
         tokenId.increment();
 
@@ -105,14 +110,14 @@ contract StoryInteractionFactory is ERC721 {
         // 2. there are still empty slots for opening a stream
         // -> create a stream 
         if (!startedStream[ownerOfTheStory] && activeStreamsCount < 20) {
-            // _createStream(ownerOfTheStory);
+            _createStream(ownerOfTheStory);
             startedStream[ownerOfTheStory] = true;
             activeStreamsCount++;
             openStream = true;
         }
 
         // Emit event with the new NFT data and a value showing whether the stream for this user has been opened.
-        emit StoryInteractionCreated(newItemId, msg.sender, _props, _storyTokenId, openStream);
+        emit StoryInteractionCreated(newItemId, owner, _props, _storyTokenId, openStream);
     }
 
     /**
