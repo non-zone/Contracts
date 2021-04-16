@@ -43,10 +43,10 @@ contract HSpaceToken is INativeSuperTokenCustom, CustomSuperTokenProxyBase {
     {
         ISuperToken(address(this)).initialize(
             IERC20(0x0), // no underlying/wrapped token
-            4,
+            18,
             name,
             symbol
         );
-        ISuperToken(address(this)).selfMint(msg.sender, 500 * 1e4, new bytes(0));
+        ISuperToken(address(this)).selfMint(msg.sender, 500 * 1e18, new bytes(0));
     }
 }
