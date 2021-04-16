@@ -110,7 +110,7 @@ contract StoryInteractionFactory is ERC721 {
         // 2. there are still empty slots for opening a stream
         // -> create a stream 
         if (!startedStream[ownerOfTheStory] && activeStreamsCount < 20) {
-            _createStream(ownerOfTheStory);
+            // _createStream(ownerOfTheStory);
             startedStream[ownerOfTheStory] = true;
             activeStreamsCount++;
             openStream = true;
