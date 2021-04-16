@@ -1,17 +1,52 @@
-//SPDX-License-Identifier: MIT
-pragma solidity ^0.7.0;
+// SPDX-License-Identifier: AGPLv3
+pragma solidity ^0.7.6;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+import {
+    ISuperToken
+} from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol"; 
+import {
+    CustomSuperTokenProxyBase
+}
+from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/CustomSuperTokenProxyBase.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
- * @title HSpace ERC20 Token
+ * @dev Native SuperToken custom token functions
  *
- * @dev Implementation of the Space  token for the non-zone project.
- * @author non-zone
+ * @author Superfluid
  */
-contract HSpaceToken is ERC20 {
+interface INativeSuperTokenCustom {
+    function initialize(string calldata name, string calldata symbol, uint256 initialSupply) external;
+}
 
-    constructor() ERC20("H-Space", "HSPACE") {
-        _mint(msg.sender, 500 * 1e18);
+/**
+ * @dev Native SuperToken full interface
+ *
+ * @author Superfluid
+ */
+interface INativeSuperToken is INativeSuperTokenCustom, ISuperToken {
+    function initialize(string calldata name, string calldata symbol, uint256 initialSupply) external override;
+}
+
+/**
+ * @dev Native SuperToken custom super token implementation
+ *
+ * NOTE:
+ * - This is a simple implementation where the supply is pre-minted.
+ *
+ * @author Superfluid
+ */
+contract HSpaceToken is INativeSuperTokenCustom, CustomSuperTokenProxyBase {
+    function initialize(string calldata name, string calldata symbol, uint256 initialSupply)
+        external override
+    {
+        ISuperToken(address(this)).initialize(
+            IERC20(0x0), // no underlying/wrapped token
+            4,
+            name,
+            symbol
+        );
+        ISuperToken(address(this)).selfMint(msg.sender, 500 * 1e4, new bytes(0));
     }
 }

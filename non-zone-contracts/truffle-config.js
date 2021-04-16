@@ -134,13 +134,6 @@ module.exports = {
     //    timeoutBlocks: 500, // # of blocks before a deployment times out  (minimum/default: 50)
     //    skipDryRun: false, // Skip dry run before migrations? (default: false for public nets )
     //  },
-    xdai: {
-      provider: () =>
-        new HDWalletProvider(mnemonic, `https://rpc.xdaichain.com/`),
-      network_id: 100, // xdai's id
-      timeoutBlocks: 500, // # of blocks before a deployment times out  (minimum/default: 50)
-      skipDryRun: false, // Skip dry run before migrations? (default: false for public nets )
-    },
   },
 
   // Set default mocha options here, use special reporters etc.
