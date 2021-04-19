@@ -33,7 +33,7 @@ contract StoryInteractionFactory is ERC721 {
 
     // TokenID counter for the NFT
     // to keep track of the number of NFTs minted
-    Counters.Counter private tokenId; 
+    Counters.Counter private tokenId;
 
     // The parent NFT contract instance
     StoryFactory private stories;
@@ -85,14 +85,19 @@ contract StoryInteractionFactory is ERC721 {
         string calldata _props,
         uint256 _storyTokenId
     ) external payable {
-
-        require(msg.sender == deployer, 'This can be called only by the deployer of the contract');
+        require(
+            msg.sender == deployer,
+            "This can be called only by the deployer of the contract"
+        );
 
         // get the address of the story owner
         address ownerOfTheStory = stories.ownerOf(_storyTokenId);
 
-        require(ownerOfTheStory != owner, 'The owner of the story is not allowed to interact with their own stories.');
-        
+        require(
+            ownerOfTheStory != owner,
+            "The owner of the story is not allowed to interact with their own stories."
+        );
+
         // mint the interaction NFT
         uint256 newItemId = tokenId.current();
         _mint(owner, newItemId);
@@ -104,11 +109,10 @@ contract StoryInteractionFactory is ERC721 {
         // add to the parent story's mapping
         storyInteractions[_storyTokenId].push(newItemId);
 
-
-        // check if 
+        // check if
         // 1. there's already created stream to the story owner
         // 2. there are still empty slots for opening a stream
-        // -> create a stream 
+        // -> create a stream
         if (!startedStream[ownerOfTheStory] && activeStreamsCount < 20) {
             // _createStream(ownerOfTheStory);
             startedStream[ownerOfTheStory] = true;
@@ -117,7 +121,13 @@ contract StoryInteractionFactory is ERC721 {
         }
 
         // Emit event with the new NFT data and a value showing whether the stream for this user has been opened.
-        emit StoryInteractionCreated(newItemId, owner, _props, _storyTokenId, openStream);
+        emit StoryInteractionCreated(
+            newItemId,
+            owner,
+            _props,
+            _storyTokenId,
+            openStream
+        );
     }
 
     /**
