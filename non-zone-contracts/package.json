@@ -4,8 +4,7 @@
   "scripts": {
     "prettier:solidity": "./node_modules/.bin/prettier --write contracts/**/*.sol",
     "test": "yarn truffle test",
-    "deploy-matic": "dotenv npm run run:deploy-matic",
-    "run:deploy-matic": "truffle deploy --network matic",
+    "transferHSpace": "node ./transferTokens.js",
     "copy-watch": "nodemon --watch \"../../packages\" --ext \"js,ts,tsx,sol\" --exec rsync --archive --delete \"../../packages/\" \"./node_modules/@superfluid-finance/\""
   },
   "dependencies": {
@@ -20,7 +19,8 @@
     "assert": "^2.0.0",
     "jest": "^26.4.2",
     "truffle": "^5.1.44",
-    "ts-jest": "^26.4.0"
+    "ts-jest": "^26.4.0",
+    "ethers": "5.1.2"
   },
   "devDependencies": {
     "@loopback/build": "^6.2.4",
